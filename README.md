@@ -4,7 +4,7 @@ A simple web drawing app which allows for freehand and shape drawing.
 
 ## Instructions for Build and Use
 
-[Software Demo](Put_Your_Video_Link_Here)
+[Software Demo](https://www.kaltura.com//p/1157612/embedPlaykitJs/uiconf_id/56813562?iframeembed=true&entry_id=1_kylpzyko)
 
 Steps to build and/or run the software:
 
@@ -36,5 +36,4 @@ I found these websites useful in developing this software:
 The following items I plan to fix, improve, and/or add to this project in the future:
 
 - [ ] Fill Color - its not actually filling in the shapes
-- [ ] Brush size - its not updating to the new size
 - [ ] More shapes
