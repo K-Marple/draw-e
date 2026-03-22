@@ -1,50 +1,56 @@
 // Grab needed document elements
-const canvas = document.getElementById("canvas");
-const tools = document.querySelectorAll(".tool");
-const fillColor = document.getElementById("fill-color");
-const lineSize = document.getElementById("lineSize");
-const colors = document.querySelectorAll(".colors .option");
-const colorPicker = document.getElementById("color-picker");
-const clearBtn = document.getElementById("clear");
-const saveBtn = document.getElementById("save");
-const ctx = canvas.getContext("2d");
+const canvas = document.getElementById("canvas") as HTMLCanvasElement;
+const tools = document.querySelectorAll<HTMLElement>(".tool");
+const fillColor = document.getElementById("fill-color") as HTMLInputElement;
+const lineWidth = document.getElementById("lineWidth") as HTMLInputElement;
+const colors = document.querySelectorAll<HTMLElement>(".colors .option");
+const colorPicker = document.getElementById("color-picker") as HTMLInputElement;
+const clearBtn = document.getElementById("clear") as HTMLButtonElement;
+const saveBtn = document.getElementById("save") as HTMLButtonElement;
+const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
 
 // Set up variables
-let prevMouseX;
-let prevMouseY;
-let snapshot;
-let isDrawing = false;
-let selectedTool = "brush";
-let brushSize = 5;
-let selectedColor = "#000";
+let prevMouseX: number;
+let prevMouseY: number;
+let snapshot: any;
+let isDrawing: boolean = false;
+let selectedTool: string = "brush";
+let brushSize: number = 5;
+let selectedColor: string = "#000";
 
 // Set up canvas
-const setCanvas = () => {
+const setCanvas = (): void => {
   ctx.fillStyle = "#fff";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
   ctx.fillStyle = selectedColor;
 };
 
-window.addEventListener("load", () => {
+window.addEventListener("load", (): void => {
   canvas.width = canvas.offsetWidth;
   canvas.height = canvas.offsetHeight;
   setCanvas();
 });
 
 // Logic for changing between tools, colors, and shapes
-tools.forEach((tool) => {
+tools.forEach((tool: HTMLElement) => {
   tool.addEventListener("click", () => {
-    document.querySelector(".options .active").classList.remove("active");
+    const activeOption = document.querySelector(".options .active") as HTMLElement | null;
+    if (activeOption) {
+      activeOption.classList.remove("active");
+    }
     tool.classList.add("active");
     selectedTool = tool.id;
   });
 });
 
-lineSize.addEventListener("change", () => (brushWidth = lineSize.value));
+lineWidth.addEventListener("change", () => (brushSize = Number(lineWidth.value)));
 
-colors.forEach((color) => {
+colors.forEach((color: HTMLElement) => {
   color.addEventListener("click", () => {
-    document.querySelector(".options .selected").classList.remove("selected");
+    const activeOption = document.querySelector(".options .selected") as HTMLElement | null;
+    if (activeOption) {
+      activeOption.classList.remove("selected");
+    }
     color.classList.add("selected");
     selectedColor = window
       .getComputedStyle(color)
@@ -52,11 +58,11 @@ colors.forEach((color) => {
   });
 });
 
-colorPicker.parentElement.style.background = colorPicker.value;
+colorPicker.parentElement!.style.background = colorPicker.value;
 
 colorPicker.addEventListener("change", () => {
-  colorPicker.parentElement.style.background = colorPicker.value;
-  colorPicker.parentElement.click();
+  colorPicker.parentElement!.style.background = colorPicker.value;
+  colorPicker.parentElement!.click();
 });
 
 clearBtn.addEventListener("click", () => {
@@ -65,14 +71,14 @@ clearBtn.addEventListener("click", () => {
 });
 
 saveBtn.addEventListener("click", () => {
-  const link = document.createElement("a");
-  link.download = `${Date.now()}`.jpg;
+  const link = document.createElement("a") as HTMLAnchorElement;
+  link.download = `${Date.now()}.jpg`;
   link.href = canvas.toDataURL();
   link.click();
 });
 
 // Draw shapes
-const drawRect = (e) => {
+const drawRect = (e: MouseEvent): void => {
   if (!fillColor.checked) {
     const width = prevMouseX - e.offsetX;
     const height = prevMouseY - e.offsetY;
@@ -83,7 +89,7 @@ const drawRect = (e) => {
   ctx.fillRect(e.offsetX, e.offsetY, width, height);
 };
 
-const drawCircle = (e) => {
+const drawCircle = (e: MouseEvent): void => {
   ctx.beginPath();
   let radius = Math.sqrt(
     Math.pow(prevMouseX - e.offsetX, 2) + Math.pow(prevMouseY - e.offsetY, 2),
@@ -92,7 +98,7 @@ const drawCircle = (e) => {
   fillColor.checked ? ctx.fill() : ctx.stroke();
 };
 
-const drawTriangle = (e) => {
+const drawTriangle = (e: MouseEvent): void => {
   ctx.beginPath();
   ctx.moveTo(prevMouseX, prevMouseY);
   ctx.lineTo(e.offsetX, e.offsetY);
@@ -101,43 +107,43 @@ const drawTriangle = (e) => {
   fillColor.checked ? ctx.fill() : ctx.stroke();
 };
 
-const drawSquare = (e) => {
+const drawSquare = (e: MouseEvent): void => {
   const side = Math.abs(prevMouseX - e.offsetX);
   ctx.beginPath();
   ctx.rect(e.offsetX, e.offsetY, side, side);
   fillColor.checked ? ctx.fill() : ctx.stroke();
 };
 
-const drawLine = (e) => {
+const drawLine = (e: MouseEvent): void => {
   ctx.beginPath();
   ctx.moveTo(prevMouseX, prevMouseY);
   ctx.lineTo(e.offsetX, e.offsetY);
   ctx.stroke();
 };
 
-const drawPencil = (e) => {
+const drawPencil = (e: MouseEvent): void => {
   ctx.lineTo(e.offsetX, e.offsetY);
   ctx.stroke();
 };
 
 // Drawing on canvas
-const startDraw = (e) => {
+const startDraw = (e: MouseEvent): void => {
   isDrawing = true;
   prevMouseX = e.offsetX;
   prevMouseY = e.offsetY;
   ctx.beginPath();
-  ctx.lineSize = brushSize;
+  ctx.lineWidth = brushSize;
   ctx.strokeStyle = selectedColor;
   ctx.fillStyle = selectedColor;
   snapshot = ctx.getImageData(0, 0, canvas.width, canvas.height);
 };
 
-const drawing = (e) => {
+const drawing = (e: MouseEvent): void => {
   if (!isDrawing) return;
   ctx.putImageData(snapshot, 0, 0);
 
   if (
-    (selectedTool === "brush" && selectedTool === "pencil") ||
+    (selectedTool === "brush" || selectedTool === "pencil") ||
     selectedTool === "eraser"
   ) {
     ctx.strokeStyle = selectedTool === "eraser" ? "#fff" : selectedColor;
